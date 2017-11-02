@@ -33,7 +33,8 @@ closes 'k'.
 The command does NOT fork into the background; it is designed to run
 under a process supervision system and simply aborts with exit code
 `1` on any error. The command logs the addresses of connecting clients,
-but does not log any data or headers the clients send.
+but does not log any data or headers the clients send. The command only
+works on POSIX-compatible systems.
 
 See the `examples` directory in this source repository for example
 scripts that can, for example, run the server in a memory-restricted
