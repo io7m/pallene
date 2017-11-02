@@ -22,13 +22,13 @@ pallene.jar \
   --mime-type m
 ```
 
-The `pallene.jar` command reads the contents of `f` into memory,
-opens a socket and binds it to address `a`, port `p`. It then chroots
+The `pallene.jar` command reads the contents of `f` into memory, opens
+a socket `s` and binds it to address `a`, port `p`. It then chroots
 to directory `c` and switches to group ID `g` and user ID `u`. Then,
-for each client connection 'k', it reads and discards at most `1024`
-octets from `k` and then responds with an HTTP `HTTP/1.0 200 OK`
-response, serving the contents of `f` with MIME type `m`. It then
-closes 'k'.
+for each client connection `k` on `s`, it reads and discards at most
+`1024` octets from `k` and then responds with an HTTP `HTTP/1.0 200
+OK` response, serving the contents of `f` with MIME type `m`. It then
+closes `k`.
 
 The command does NOT fork into the background; it is designed to run
 under a process supervision system and simply aborts with exit code
