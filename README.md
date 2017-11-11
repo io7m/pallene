@@ -1,9 +1,9 @@
 pallene
 =====
 
-[![Travis](https://img.shields.io/travis/io7m/pallene.svg?style=flat-square)](https://travis-ci.org/io7m/pallene)
-[![Maven Central](https://img.shields.io/maven-central/v/com.io7m.pallene/com.io7m.pallene.svg?style=flat-square)](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.io7m.pallene%22)
-[![Codacy grade](https://img.shields.io/codacy/grade/f638fbf97971498f9dd2b5d6e9a5f586.svg?style=flat-square)](https://www.codacy.com/app/github_79/pallene)
+[![Travis](https://img.shields.io/travis/io7m/pallene.png?style=flat-square)](https://travis-ci.org/io7m/pallene)
+[![Maven Central](https://img.shields.io/maven-central/v/com.io7m.pallene/com.io7m.pallene.png?style=flat-square)](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.io7m.pallene%22)
+[![Codacy grade](https://img.shields.io/codacy/grade/f638fbf97971498f9dd2b5d6e9a5f586.png?style=flat-square)](https://www.codacy.com/app/github_79/pallene)
 
 An ultra-minimal single-file static web server.
 
