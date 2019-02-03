@@ -96,13 +96,13 @@
   <build>
     <pluginManagement>
       <plugins>
-        <!-- Require JDK 9 -->
+        <!-- Require JDK 11 -->
         <plugin>
           <artifactId>maven-compiler-plugin</artifactId>
           <configuration>
-            <release>9</release>
-            <source>9</source>
-            <target>9</target>
+            <release>11</release>
+            <source>11</source>
+            <target>11</target>
           </configuration>
         </plugin>
       </plugins>
