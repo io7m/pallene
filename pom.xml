@@ -10,7 +10,7 @@
 
   <groupId>com.io7m.pallene</groupId>
   <artifactId>com.io7m.pallene</artifactId>
-  <version>0.0.1</version>
+  <version>0.0.2-SNAPSHOT</version>
   <packaging>jar</packaging>
 
   <name>com.io7m.pallene</name>
@@ -19,6 +19,7 @@
 
   <properties>
     <io7m.api.previousVersion>0.0.1</io7m.api.previousVersion>
+    <com.codacy.id>97f853737ec84d449e83d58c2fff8e0f</com.codacy.id>
   </properties>
 
   <licenses>
