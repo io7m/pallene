@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<div xmlns="http://www.w3.org/1999/xhtml">
+  <ul>
+    <li>Single-file static web server</li>
+    <li>Unconditionally <tt>chroot</tt>s to a specified directory for exploit mitigation</li>
+    <li>Unconditionally drops privileges after opening a listening socket</li>
+    <li>Designed for use under <i>process supervision</i></li>
+    <li>Tiny ~300 line auditable codebase</li>
+    <li>ISC license</li>
+  </ul>
+</div>

@@ -36,8 +36,10 @@ import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 /**
  * Web server.
@@ -54,6 +56,11 @@ public final class PalleneYocto
 
   private static final class CommandLineOptions
   {
+    CommandLineOptions()
+    {
+
+    }
+
     @Parameter(
       names = "--chroot",
       description = "Chroot to this directory after starting the server.",
@@ -112,6 +119,7 @@ public final class PalleneYocto
     System.exit(go(args));
   }
 
+  // CHECKSTYLE:OFF
   private static int go(
     final String[] args)
   {
@@ -193,7 +201,9 @@ public final class PalleneYocto
         client.setTcpNoDelay(true);
         client.setKeepAlive(false);
         client.setSoTimeout(5000);
-        exec.submit(() -> serveClient(options, file_data, client));
+        final Future<?> future =
+          exec.submit(() -> serveClient(options, file_data, client));
+        LOG.trace("submitted: {}", future);
       } catch (final IOException e) {
         LOG.error("Could not accept client: ", e);
         try {
@@ -218,7 +228,8 @@ public final class PalleneYocto
       try {
         final byte[] buffer = new byte[1024];
         final InputStream in = client.getInputStream();
-        in.read(buffer);
+        final int read = in.read(buffer);
+        LOG.trace("read: {}", Integer.valueOf(read));
       } catch (final IOException e) {
         LOG.error("Could not read from client: ", e);
         return;
@@ -270,6 +281,7 @@ public final class PalleneYocto
       }
     }
   }
+  // CHECKSTYLE:ON
 
   private static PalleneChrootType loadChrootFunction()
   {
@@ -288,17 +300,19 @@ public final class PalleneYocto
     private final PalleneChrootType sandbox_chroot_func;
 
     Sandbox(
-      final POSIX posix,
+      final POSIX in_posix,
       final int gid,
       final int uid,
       final PalleneChrootType chroot_func,
       final Path chroot)
     {
-      this.posix = posix;
+      this.posix = Objects.requireNonNull(in_posix, "POSIX");
       this.sandbox_gid = gid;
       this.sandbox_uid = uid;
-      this.sandbox_chroot_func = chroot_func;
-      this.sandbox_chroot_path = chroot;
+      this.sandbox_chroot_func =
+        Objects.requireNonNull(chroot_func, "chroot_func");
+      this.sandbox_chroot_path =
+        Objects.requireNonNull(chroot, "chroot");
     }
 
     void sandbox()
@@ -306,45 +320,65 @@ public final class PalleneYocto
     {
       LOG.debug("sandboxing");
 
+      chroot(this.posix, this.sandbox_chroot_path, this.sandbox_chroot_func);
+      setGid(this.posix, this.sandbox_gid);
+      setUid(this.posix, this.sandbox_uid);
+    }
+
+    private static void setUid(
+      final POSIX posix,
+      final int sandbox_uid)
+      throws IOException
+    {
+      LOG.debug("setuid {}", Integer.valueOf(sandbox_uid));
+      final int e = posix.setuid(sandbox_uid);
+      if (e == -1) {
+        final String message =
+          posix.strerror(posix.errno());
+        throw new IOException(
+          "Could not setuid to " + sandbox_uid + ": " + message);
+      }
+    }
+
+    private static void setGid(
+      final POSIX posix,
+      final int sandbox_gid)
+      throws IOException
+    {
+      LOG.debug("setgid {}", Integer.valueOf(sandbox_gid));
+      final int e = posix.setgid(sandbox_gid);
+      if (e == -1) {
+        final String message =
+          posix.strerror(posix.errno());
+        throw new IOException(
+          "Could not setgid to " + sandbox_gid + ": " + message);
+      }
+    }
+
+    private static void chroot(
+      final POSIX posix,
+      final Path sandbox_chroot_path,
+      final PalleneChrootType sandbox_chroot_func)
+      throws IOException
+    {
       {
-        LOG.debug("chrooting to {}", this.sandbox_chroot_path);
-        final int e = this.sandbox_chroot_func.chroot(this.sandbox_chroot_path.toString());
+        LOG.debug("chrooting to {}", sandbox_chroot_path);
+        final int e = sandbox_chroot_func.chroot(sandbox_chroot_path.toString());
         if (e == -1) {
           throw new IOException(
-            "sandbox_chroot_path failed: " + this.posix.strerror(this.posix.errno()));
+            "sandbox_chroot_path failed: " + posix.strerror(posix.errno()));
         }
       }
 
       {
         LOG.debug("chdir to /");
-        final int e = this.posix.chdir("/");
+        final int e = posix.chdir("/");
         if (e == -1) {
           throw new IOException(
-            "chdir failed: " + this.posix.strerror(this.posix.errno()));
-        }
-      }
-
-      {
-        LOG.debug("setgid {}", Integer.valueOf(this.sandbox_gid));
-        final int e = this.posix.setgid(this.sandbox_gid);
-        if (e == -1) {
-          final String message =
-            this.posix.strerror(this.posix.errno());
-          throw new IOException(
-            "Could not setgid to " + this.sandbox_gid + ": " + message);
-        }
-      }
-
-      {
-        LOG.debug("setuid {}", Integer.valueOf(this.sandbox_uid));
-        final int e = this.posix.setuid(this.sandbox_uid);
-        if (e == -1) {
-          final String message =
-            this.posix.strerror(this.posix.errno());
-          throw new IOException(
-            "Could not setuid to " + this.sandbox_uid + ": " + message);
+            "chdir failed: " + posix.strerror(posix.errno()));
         }
       }
     }
   }
 }
+
