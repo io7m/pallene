@@ -19,6 +19,7 @@ package com.io7m.pallene;
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.ParameterException;
+import com.beust.jcommander.internal.DefaultConsole;
 import jnr.ffi.LibraryLoader;
 import jnr.posix.POSIX;
 import jnr.posix.POSIXFactory;
@@ -136,9 +137,8 @@ public final class PalleneYocto
       commander.parse(args);
     } catch (final ParameterException e) {
       LOG.error("parameter error: {}", e.getMessage());
-      final StringBuilder text = new StringBuilder(128);
-      commander.usage(text);
-      LOG.info(text.toString());
+      commander.setConsole(new DefaultConsole(System.err));
+      commander.usage();
       return 1;
     }
 
